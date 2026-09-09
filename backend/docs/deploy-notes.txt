@@ -1,0 +1,3 @@
+This is a plain .txt file that accidentally ended up in docs/. It has
+no frontmatter at all, and the loader shouldn't even try to parse it -
+its extension alone should get it rejected.
