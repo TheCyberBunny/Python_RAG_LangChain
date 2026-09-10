@@ -1,0 +1,74 @@
+"""
+Pydantic request/response schemas for the API layer.
+
+These are deliberately separate from app.models - the plain-Python
+domain classes stay exactly as they are, and these BaseModel classes
+describe only what the API is willing to show a client.
+"""
+
+from datetime import date
+
+from pydantic import BaseModel, ConfigDict
+
+from app.models import DocumentCategory, TicketPriority, TicketStatus
+
+
+class DocumentOut(BaseModel):
+    # from_attributes=True (the Pydantic v2 name for the old orm_mode)
+    # lets DocumentOut.model_validate(some_document) read values off a
+    # plain object's ATTRIBUTES (document.id, document.title, ...)
+    # instead of requiring a dict. Without this, model_validate would
+    # only accept a dict, not an arbitrary Python object.
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    category: DocumentCategory
+    owner_id: int
+    last_reviewed_at: date
+
+
+class StaleDocumentOut(BaseModel):
+    id: int
+    title: str
+    category: DocumentCategory
+    days_since_reviewed: int
+
+class TicketOut(BaseModel):
+    # Same from_attributes trick as DocumentOut - a Ticket's fields map
+    # straight across, so no hand-built construction needed here.
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    priority: TicketPriority
+    status: TicketStatus
+    assignee_id: int
+    related_document_id: int | None
+
+
+class MismatchOut(BaseModel):
+    # A mismatch isn't one object - it's a Ticket, a Document, and two
+    # Users, so (like StaleDocumentOut) this one is always built by
+    # hand with keyword arguments, never through model_validate().
+    ticket_id: int
+    ticket_title: str
+    assignee_name: str
+    assignee_team: str
+    owner_name: str
+    owner_team: str
+
+class DocumentPage(BaseModel):
+    # A pagination "envelope" - the actual page of results, plus
+    # enough metadata (total, skip, limit) for a client to know
+    # whether there's more to fetch, without a second request.
+    items: list[DocumentOut]
+    total: int
+    skip: int
+    limit: int
+
+class TicketPage(BaseModel):
+    items: list[TicketOut]
+    total: int
+    skip: int
+    limit: int
