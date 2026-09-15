@@ -72,3 +72,29 @@ class TicketPage(BaseModel):
     total: int
     skip: int
     limit: int
+
+class TeamWorkload(BaseModel):
+    team: str
+    open_ticket_count: int
+    load_score: float
+    load_share_pct: float
+    is_overloaded: bool
+
+
+class WorkloadReport(BaseModel):
+    teams: list[TeamWorkload]
+    total_open_tickets: int
+    mean_load_score: float
+    std_load_score: float
+
+class TeamDocumentOwnership(BaseModel):
+    team: str
+    owned_document_count: int
+    stale_document_count: int
+    stale_share_pct: float
+    is_stale_risk: bool
+
+
+class DocumentOwnershipReport(BaseModel):
+    teams: list[TeamDocumentOwnership]
+    total_documents: int
