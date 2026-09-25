@@ -8,7 +8,7 @@ import time
 
 from fastapi import FastAPI, Request
 
-from app.api.routers import documents, tickets, analytics
+from app.api.routers import documents, tickets, analytics, ask
 
 app = FastAPI(title="DevMate", version="0.1.0")
 
@@ -42,3 +42,4 @@ def health_check() -> dict[str, str]:
 app.include_router(documents.router)
 app.include_router(tickets.router)
 app.include_router(analytics.router)
+app.include_router(ask.router)

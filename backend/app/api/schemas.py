@@ -98,3 +98,24 @@ class TeamDocumentOwnership(BaseModel):
 class DocumentOwnershipReport(BaseModel):
     teams: list[TeamDocumentOwnership]
     total_documents: int
+
+class AskRequest(BaseModel):
+    question: str
+
+
+class AskResponse(BaseModel):
+    # Not built via model_validate() - app.rag.qa_chain.AskResult isn't
+    # a domain model with from_attributes wired up, so the router
+    # constructs this one field by field, the same way MismatchOut and
+    # TeamWorkload already do from plain dicts/tuples elsewhere in this
+    # file.
+    answer: str
+    sources: list[str]
+
+class AskStrictRequest(BaseModel):
+    question: str
+    score_threshold: float
+
+class AskConversationRequest(BaseModel):
+    conversation_id: str
+    question: str
